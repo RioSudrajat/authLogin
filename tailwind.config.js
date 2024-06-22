@@ -6,7 +6,16 @@ export default {
     "./resources/**/*.vue",
   ],
   theme: {
+    fontFamily: {
+      'poppins': ['Poppins', 'sans-serif'],
+    },
     extend: {},
+  },
+
+  variants: {
+    extend: {
+      fontWeight: ['hover', 'focus', 'active'], // tambahkan varian yang diperlukan
+    },
   },
   plugins: [],
 }

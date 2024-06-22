@@ -11,38 +11,42 @@
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
     <title>GreenV | Website</title>
 </head>
-<body class="bg-gray-100" x-data="{ open: false, scrollY: 0 }" @scroll.window="scrollY = window.scrollY">
+<body class="bg-gray-100" x-data="{ open: false, scrollY: 0, currentPath: '{{ url()->current() }}' }" @scroll.window="scrollY = window.scrollY">
 
     <div class="container mx-auto px-4">
         <!-- --------------- HEADER --------------- -->
-        <nav id="header" :class="{ 'bg-opacity-70': scrollY > 50, 'bg-opacity-100': scrollY <= 50 }" class="fixed flex justify-between items-center backdrop-filter backdrop-blur-lg bg-gray-100 bg-opacity-80 w-full h-24 py-4 transition-all duration-300 z-50 px-20">
-            <div class="nav-logo relative flex items-center">
+        <nav id="header" :class="{ 'bg-opacity-70': scrollY > 50, 'bg-opacity-100': scrollY <= 50 }" class="fixed top-0 left-0 right-0 flex justify-between items-center backdrop-filter backdrop-blur-lg bg-gray-100 bg-opacity-80 h-24 py-4 transition-all duration-300 z-50 px-4 md:px-8">
+            <div class="flex items-center space-x-4">
                 <img src="{{asset('user/images/logo1.png')}}" class="w-12 h-12 mr-2" alt="Logo"/>
-                <p class="nav-name text-3xl font-semibold text-gray-700">GreenV</p>
-                <span class="absolute top-[-15px] right-[-20px] text-5xl text-gray-500">.</span>
+                <p class="text-3xl font-semibold text-gray-700">GreenV</p>
             </div>
-            <div :class="{ 'flex': open, 'hidden': !open }" class="nav-menu flex-col md:flex md:flex-row md:items-center md:space-x-8">
-                <ul class="nav_menu_list flex flex-col md:flex-row space-y-4 md:space-y-0">
-                    <li class="nav_list relative">
-                        <a href="{{url('/')}}" class="nav-link text-gray-600 hover:text-gray-800 font-medium px-4 mx-5">Home</a>
-                        <div class="circle"></div>
-                    </li>
-                    <li class="nav_list relative">
-                        <a href="{{url('/education')}}" class="nav-link text-gray-600 hover:text-gray-800 font-medium px-4 mx-5">Education</a>
-                        <div class="circle"></div>
-                    </li>
-                    <li class="nav_list relative">
-                        <a href="{{url('/laporan')}}" class="nav-link text-gray-600 hover:text-gray-800 font-medium px-4 mx-5">Report</a>
-                        <div class="circle"></div>
-                    </li>
-                </ul>
+            <div class="hidden md:flex flex-grow justify-center items-center space-x-8">
+                <a href="{{url('/')}}" 
+                   class="text-gray-600 hover:text-gray-800 font-medium" 
+                   :class="{ 'text-gray-900 font-semibold border-b-2 border-green-500': currentPath === '{{url('/')}}' }">Home</a>
+                <a href="{{url('/education')}}" 
+                   class="text-gray-600 hover:text-gray-800 font-medium" 
+                   :class="{ 'text-gray-900 font-semibold border-b-2 border-green-500': currentPath === '{{url('/education')}}' }">Education</a>
+                <a href="{{url('/laporan')}}" 
+                   class="text-gray-600 hover:text-gray-800 font-medium" 
+                   :class="{ 'text-gray-900 font-semibold border-b-2 border-green-500': currentPath === '{{url('/laporan')}}' }">Report</a>
             </div>
-            <div class="nav-button hidden md:block">
-                 <a href="{{url('auth/login')}}" class="btn bg-gray-200 text-gray-700 hover:bg-gray-800 hover:text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300">Login <i class="uil uil-file-alt ml-2"></i></a>
+            <div class="hidden md:block">
+                @auth
+                <a href="{{ route('logout') }}" class="btn bg-gray-200 text-gray-700 hover:bg-gray-800 hover:text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout <i class="uil uil-sign-out-alt ml-2"></i></a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            @else
+                <a href="{{url('auth/login')}}" class="btn bg-gray-200 text-gray-700 hover:bg-gray-800 hover:text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300">Login <i class="uil uil-file-alt ml-2"></i></a>
+            @endauth
+    
             </div>
-
-            <div class="nav-menu-btn md:hidden" @click="open = !open">
-                <i class="uil uil-bars text-2xl text-gray-700"></i>
+            <div class="md:hidden">
+                <button @click="open = !open" class="text-gray-700 focus:outline-none">
+                    <i class="uil uil-bars text-2xl"></i>
+                </button>
             </div>
         </nav>
 
@@ -66,5 +70,13 @@
 
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+    <script>
+        // Alpine.js code to update currentPath
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('navbar', () => ({
+                currentPath: window.location.pathname
+            }));
+        });
+    </script>
 </body>
 </html>
